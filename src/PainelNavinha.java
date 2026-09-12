@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -9,37 +10,55 @@ import javax.swing.Timer;
 
 import javax.swing.JPanel;
 
-public class PainelNavinha extends JPanel implements KeyListener {
+public class PainelNavinha extends JPanel implements ActionListener, KeyListener {
     // ALTURA -> y LARGURA -> x
     private final int ALTURA = 25;
     private final int LARGURA = 80;
-    private final int naveY = 15;
-    private final int naveX = 36;
     private char[][] tela;
-
+    private int naveY = 15;
+    private int naveX = 36;
     private boolean esquerda = false;
     private boolean direita = false;
 
     public PainelNavinha() {
         setBackground(Color.BLACK);
 
+        setFocusable(true);
         addKeyListener(this);
 
-        Timer timer = new Timer(100, e -> {render();});
+        Timer timer = new Timer(100, this);
         timer.start();
     }
 
-    private void render(){
 
-
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        moveShip();
 
         repaint();
     }
 
+
+    // private void render(){
+
+
+    // }
+
+    private void moveShip(){
+        if(esquerda) naveX--;
+        else if (direita) naveX++;
+    }
+
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = true;
-        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) direita = true;
+        if(e.getKeyCode() == KeyEvent.VK_LEFT){
+             esquerda = true;
+             System.out.print("Esquerda");
+        }else if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+            direita = true;
+            System.out.print("Diretira");
+        }
+           
     }
 
     @Override
