@@ -9,7 +9,7 @@ public class Main extends JFrame{
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon(Main.class.getResource("/icons/ghost.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/icons/ghost.png")).getImage());
 
         add(new PainelNavinha());
 
