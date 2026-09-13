@@ -1,5 +1,4 @@
-import java.awt.Dimension;
-
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class Main extends JFrame{
@@ -7,13 +6,13 @@ public class Main extends JFrame{
     public Main(){
         setTitle("Teste");
         setSize(900, 600);
-        // setResizable(false);
+        setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setIconImage(new ImageIcon(Main.class.getResource("/icons/ghost.png")).getImage());
 
         add(new PainelNavinha());
 
-        
         setVisible(true);
     }
 
