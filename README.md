@@ -15,7 +15,7 @@ possui a configuração necessária para execução.
 
 ## Autores
 
-- Artur Mauro
+- Arthur Mauro
 - Matheus Santana
 - Otávio de Moraes
 
