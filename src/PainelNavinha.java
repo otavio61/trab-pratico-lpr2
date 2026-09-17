@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
@@ -10,17 +8,24 @@ import java.util.Random;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class PainelNavinha extends JPanel implements ActionListener, KeyListener {
+public class PainelNavinha extends JPanel implements KeyListener {
     // ALTURA -> y LARGURA -> x
     private final int ALTURA = 25;
     private final int LARGURA = 80;
     private final int TAMANHO_FONTE = 20;
+
     private char[][] plano_nave = new char[ALTURA][LARGURA];
     private char[][] plano_estrelas = new char[ALTURA][LARGURA];
+    private char[][] plano_meteoros = new char[ALTURA][LARGURA];
+
     private int naveY = 18;
     private int naveX = 40;
+
     private boolean esquerda = false;
     private boolean direita = false;
+
+    Timer timerAmbiente, timerMeteoro;
+
     private int pontuacao = 0;
 
     public PainelNavinha() {
@@ -28,27 +33,23 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
         setForeground(Color.WHITE);
         setFocusable(true);
         addKeyListener(this);
+        
+        timerAmbiente = new Timer(100, e -> {moverNave(); repaint();});
+        timerAmbiente.start();
 
-        Timer timer = new Timer(100, this);
-        timer.start();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        moverNave();
-
-        repaint();
+        // timerMeteoro = new Timer(500, e -> {desenharMeteoros(); repaint();});
+        // timerMeteoro.start();
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = true;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = true;
         else if (e.getKeyCode() == KeyEvent.VK_RIGHT) direita = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = false;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = false;
         else if (e.getKeyCode() == KeyEvent.VK_RIGHT)  direita = false;
     }
 
@@ -62,6 +63,7 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
         preencher();
 
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, TAMANHO_FONTE));
+        g.drawString("== Jogo Navinha ==", 375, 20);
 
         desenharNave();
 
@@ -82,7 +84,7 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
         }
 
         g.setColor(Color.WHITE);
-        g.drawString("Pontuação: " + pontuacao, 10, 540);
+        g.drawString("Pontuação: " + pontuacao++, 10, 540);
     }
 
     /**
@@ -98,9 +100,39 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
             coordX = r.nextInt(2, LARGURA);
             coordY = r.nextInt(1, ALTURA);
 
-            if(plano_nave[coordY][coordX] == ' ') {
+            if(plano_nave[coordY][coordX] == ' ' && plano_meteoros[coordY][coordX] == ' ') {
                 plano_estrelas[coordY][coordX] = '.';
                 quantidadeEstrelas++;
+            }
+        }
+    }
+
+    private void desenharMeteoros(){
+        int quantidadeMeteoros = 0;
+        int coordX, coordY;
+        Random r = new Random();
+
+        for (int i = plano_meteoros.length - 1; i >= 0; i--) {
+            for (int j = plano_meteoros[0].length - 1; j >= 0; j--) {
+                if(plano_meteoros[i][j] == 'O'){
+                    if (i + 1 > 25) 
+                        plano_meteoros[i][j] = ' ';
+                    else {
+                        plano_meteoros[i + 1][j] = 'O';
+                        plano_meteoros[i][j] = ' ';
+                        quantidadeMeteoros++;
+                    } 
+                }
+            }   
+        }
+
+        while (quantidadeMeteoros < 3) {
+            coordX = r.nextInt(2, LARGURA);
+            coordY = r.nextInt(1, 5);
+            
+            if(plano_meteoros[coordY][coordX] == ' '){
+                plano_meteoros[coordY][coordX] = 'O';
+                quantidadeMeteoros++;
             }
         }
     }
@@ -109,8 +141,8 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
      * Realiza a movimentação da nave
      */
     private void moverNave(){
-        if(esquerda && naveX >= 3) naveX -= 2;
-        else if (direita && naveX <= 69) naveX += 2;
+        if (esquerda && naveX >= 3) naveX -= 2;
+        else if (direita && naveX <= 74) naveX += 2;
     }
 
     /**
