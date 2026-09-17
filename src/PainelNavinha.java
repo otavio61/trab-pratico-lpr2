@@ -13,11 +13,12 @@ import javax.swing.Timer;
 public class PainelNavinha extends JPanel implements ActionListener, KeyListener {
     // ALTURA -> y LARGURA -> x
     private final int ALTURA = 25;
-    private final int LARGURA = 950;
+    private final int LARGURA = 80;
     private final int TAMANHO_FONTE = 20;
-    private char[][] tela;
+    private char[][] plano_nave = new char[ALTURA][LARGURA];
+    private char[][] plano_estrelas = new char[ALTURA][LARGURA];
     private int naveY = 18;
-    private int naveX = 463;
+    private int naveX = 36;
     private boolean esquerda = false;
     private boolean direita = false;
     private int pontuacao = 0;
@@ -27,8 +28,6 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
         setForeground(Color.WHITE);
         setFocusable(true);
         addKeyListener(this);
-
-        tela = new char[ALTURA][LARGURA];
 
         Timer timer = new Timer(100, this);
         timer.start();
@@ -60,54 +59,47 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        preencher();   
-        
-        //Sugestão: Consolas
+        preencher();
+
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, TAMANHO_FONTE));
 
-        // desenhar(new char[]{'.', '.', ':', '!', '|', '|', '|', '#', '|', 'T', '|', '!', ':', '.',
-        // '-', '-', '-', ' ', '-', '-', '+', '-', '<', '>', '-', '+', '-', ' ', '-', '-', '-', ' ', ' '},
-        // new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        // 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
-        // new int[]{69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 60, 61, 62, 63, 64, 65,
-        // 66, 67, 68, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79});
+        desenharNave();
 
         g.setColor(Color.CYAN);
-        desenhar(new char[]{'.', '.', '\'', '.', '|', 'o', '|', '.', '\'', 'o', '\'', '.', '|', '.', '-', '.', '|', '\'', '\''}, 
-        new int[]{naveY, naveY + 1, naveY + 1, naveY + 1, naveY + 2, naveY + 2, naveY + 2, naveY + 3, naveY + 3, naveY + 3, naveY + 3, naveY + 3, naveY + 4, naveY + 4, naveY + 4, naveY + 4, naveY + 4, naveY + 5, naveY + 5},
-        new int[]{naveX + 1, naveX - 12, naveX, naveX + 12, naveX - 12, naveX, naveX + 12, naveX - 24, naveX - 12, naveX, naveX + 12, naveX + 24, naveX - 24, naveX - 12, naveX, naveX + 12, naveX + 24, naveX - 24, naveX + 24}, g);
-        
+        for (int i = 0; i < plano_nave.length; i++) {
+            String linha = new String(plano_nave[i]);
+
+            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
+        }
+
+        desenharEstrelas();
+
         g.setColor(Color.YELLOW);
-        desenharEstrelasPequenas(g);
+        for (int i = 0; i < plano_estrelas.length; i++) {
+            String linha = new String(plano_estrelas[i]);
 
-
-        // for (int i = 0; i < tela.length; i++) {
-        //     String linha = new String(tela[i]);
-
-        //     g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular divisão de caracteres por linha
-        // }
+            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE);
+        }
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, TAMANHO_FONTE + 5));
-        g.drawString("Pontuação : " + pontuacao++, 6, 540);
+        g.drawString("Pontuação: " + pontuacao, 10, 540);
     }
 
     /**
-     * Insere os elementos que representam estrelas pequenas na matriz que representa a interface
-     * 
-     * @param g Contexto gráfico
+     * Insere os elementos que representam estrelas na matriz que representa o plano das estrelas,
+     * verificando também se não existe elementos presentes na matriz que representa o plano da nave 
      */
-    private void desenharEstrelasPequenas(Graphics g){
+    private void desenharEstrelas(){
         int quantidadeEstrelas = 0;
         int coordX, coordY;
         Random r = new Random();
 
         while (quantidadeEstrelas < 20) {
-            coordX = r.nextInt(0, LARGURA);
+            coordX = r.nextInt(2, LARGURA);
             coordY = r.nextInt(1, ALTURA);
 
-            if(tela[coordY][coordX] == ' ') {
-                desenhar('.', coordY, coordX, g);
+            if(plano_nave[coordY][coordX] == ' ') {
+                plano_estrelas[coordY][coordX] = '.';
                 quantidadeEstrelas++;
             }
         }
@@ -117,44 +109,49 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
      * Realiza a movimentação da nave
      */
     private void moverNave(){
-        if(esquerda && naveX >= 71) naveX -= 24;
-        else if (direita && naveX <= 878) naveX += 24;
+        if(esquerda && naveX >= 3) naveX -= 2;
+        else if (direita && naveX <= 69) naveX += 2;
     }
 
     /**
-     * Preenche a matriz que representa a interface com espaços em branco
+     * Desenha a nave na interface.
+     * Crédito da arte: <a href='https://www.asciiart.eu/art/9b7a16c065fdb471'>Christian Jensen (também como C.J. e CJ)</a>
+     */
+    private void desenharNave() {
+        plano_nave[naveY][naveX] = '.';
+
+        plano_nave[naveY + 1][naveX - 1] = '.';
+        plano_nave[naveY + 1][naveX] = '\'';
+        plano_nave[naveY + 1][naveX + 1] = '.';
+
+        plano_nave[naveY + 2][naveX - 1] = '|';
+        plano_nave[naveY + 2][naveX] = 'o';
+        plano_nave[naveY + 2][naveX + 1] = '|';
+
+        plano_nave[naveY + 3][naveX - 2] = '.';
+        plano_nave[naveY + 3][naveX - 1] = '\'';
+        plano_nave[naveY + 3][naveX] = 'o';
+        plano_nave[naveY + 3][naveX + 1] = '\'';
+        plano_nave[naveY + 3][naveX + 2] = '.';
+
+        plano_nave[naveY + 4][naveX - 2] = '|';
+        plano_nave[naveY + 4][naveX - 1] = '.';
+        plano_nave[naveY + 4][naveX] = '-';
+        plano_nave[naveY + 4][naveX + 1] = '.';
+        plano_nave[naveY + 4][naveX + 2] = '|';
+
+        plano_nave[naveY + 5][naveX - 2] = '\'';
+        plano_nave[naveY + 5][naveX + 2] = '\'';
+    }
+
+    /**
+     * Preenche as matrizes que representam os planos da nave e estrelas com espaços em branco
      */
     private void preencher() {
         for (int i = 0; i < ALTURA; i++) 
-            for (int j = 0; j < LARGURA; j++) 
-                tela[i][j] = ' ';
-    }
-
-    /**
-     * Insere um novo caractere na matriz que representa a interface
-     * 
-     * @param c Novo caractere
-     * @param y Coordenada do eixo y
-     * @param x Coordernada do eixo x
-     * @param g Contexto gráfico 
-     */
-    private void desenhar(char c, int y, int x, Graphics g) {
-        g.drawString(Character.toString(c), x, (y + 1) * TAMANHO_FONTE);
-        tela[y][x] = c;
-    }
-
-    /**
-     * Insere os novos caracteres na matriz que representa a interface
-     * 
-     * @param c Novos caractere
-     * @param y Coordenadas do eixo y
-     * @param x Coordernadas do eixo x
-     * @param g Contexto gráfico 
-     */
-    private void desenhar(char[] c, int[] y, int[] x, Graphics g) {
-        for (int i = 0; i < c.length; i++) {
-            g.drawString(Character.toString(c[i]), x[i], (y[i] + 1) * TAMANHO_FONTE);
-            tela[y[i]][x[i]] = c[i];
-        }
+            for (int j = 0; j < LARGURA; j++){
+                plano_nave[i][j] = ' ';
+                plano_estrelas[i][j] = ' ';
+            }
     }
 }
