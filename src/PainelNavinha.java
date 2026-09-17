@@ -18,7 +18,7 @@ public class PainelNavinha extends JPanel implements ActionListener, KeyListener
     private char[][] plano_nave = new char[ALTURA][LARGURA];
     private char[][] plano_estrelas = new char[ALTURA][LARGURA];
     private int naveY = 18;
-    private int naveX = 36;
+    private int naveX = 40;
     private boolean esquerda = false;
     private boolean direita = false;
     private int pontuacao = 0;
