@@ -33,12 +33,14 @@ public class PainelNavinha extends JPanel implements KeyListener {
         setForeground(Color.WHITE);
         setFocusable(true);
         addKeyListener(this);
-        
+
         timerAmbiente = new Timer(100, e -> {moverNave(); repaint();});
         timerAmbiente.start();
 
-        // timerMeteoro = new Timer(500, e -> {desenharMeteoros(); repaint();});
-        // timerMeteoro.start();
+        preencherPlanoMeteoro(); // Isso deve acontecer apenas uma vez
+
+        timerMeteoro = new Timer(500, e -> {desenharMeteoros(); repaint();}); // 100ms é um bom tempo, mas seria bom deixar um segundo Timer caso tenha opção de dificuldade
+        timerMeteoro.start();
     }
 
     @Override
@@ -72,6 +74,13 @@ public class PainelNavinha extends JPanel implements KeyListener {
             String linha = new String(plano_nave[i]);
 
             g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
+        }
+
+        g.setColor(Color.WHITE);
+        for (int i = 0; i < plano_meteoros.length; i++) {
+            String linha = new String(plano_meteoros[i]);
+
+            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE);
         }
 
         desenharEstrelas();
@@ -115,7 +124,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
         for (int i = plano_meteoros.length - 1; i >= 0; i--) {
             for (int j = plano_meteoros[0].length - 1; j >= 0; j--) {
                 if(plano_meteoros[i][j] == 'O'){
-                    if (i + 1 > 25) 
+                    if (i + 1 > 24) 
                         plano_meteoros[i][j] = ' ';
                     else {
                         plano_meteoros[i + 1][j] = 'O';
@@ -126,7 +135,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
             }   
         }
 
-        while (quantidadeMeteoros < 3) {
+        while (quantidadeMeteoros < 5) {
             coordX = r.nextInt(2, LARGURA);
             coordY = r.nextInt(1, 5);
             
@@ -147,7 +156,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
     /**
      * Desenha a nave na interface.
-     * Crédito da arte: <a href='https://www.asciiart.eu/art/9b7a16c065fdb471'>Christian Jensen (também como C.J. e CJ)</a>
+     * Crédito da arte: <a href='https://www.asciiart.eu/art/9b7a16c065fdb471'>Christian Jensen (também como C.J. ou CJ)</a>
      */
     private void desenharNave() {
         plano_nave[naveY][naveX] = '.';
@@ -177,7 +186,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
     }
 
     /**
-     * Preenche as matrizes que representam os planos da nave e estrelas com espaços em branco
+     * Preenche as matrizes que representam os planos dos elementos
      */
     private void preencher() {
         for (int i = 0; i < ALTURA; i++) 
@@ -185,5 +194,14 @@ public class PainelNavinha extends JPanel implements KeyListener {
                 plano_nave[i][j] = ' ';
                 plano_estrelas[i][j] = ' ';
             }
+    }
+
+    /**
+     * Preenche especificamente a matriz que representa o plano dos meteoros
+     */
+    private void preencherPlanoMeteoro(){
+        for (int i = 0; i < ALTURA; i++) 
+            for (int j = 0; j < LARGURA; j++)
+                plano_meteoros[i][j] = ' '; // plano_meteoros é imutável entre os repaints
     }
 }
