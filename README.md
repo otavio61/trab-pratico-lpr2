@@ -1,4 +1,4 @@
-# Projeto jogos fliperama
+# Projeto AMO (Arcade Machine Object)
 
 ## Sobre
 
