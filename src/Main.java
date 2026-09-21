@@ -1,22 +1,15 @@
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
-public class Main extends JFrame{
-
-    public Main(){
-        setTitle("Teste");
-        setSize(980, 600);
-        // setResizable(false);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon(getClass().getResource("/icons/ghost.png")).getImage());
-
-        add(new PainelNavinha());
-
-        setVisible(true);
-    }
+public class Main{
 
     public static void main(String[] args) {
-        new Main();
+        
+        /**
+         * O uso de SwingUtilities.invokeLater garante que os componentes da 
+         * biblioteca Swing sejam executados na Thread dedicada (Event Dispatch Thread)
+         */
+        SwingUtilities.invokeLater(() -> {
+            new FramePrincipal().setVisible(true);
+        }); 
     }
 }

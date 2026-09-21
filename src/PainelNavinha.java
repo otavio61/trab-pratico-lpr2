@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -24,23 +25,28 @@ public class PainelNavinha extends JPanel implements KeyListener {
     private boolean esquerda = false;
     private boolean direita = false;
 
-    Timer timerAmbiente, timerMeteoro;
-
     private int pontuacao = 0;
+    
+    Timer timerAmbiente, timerMeteoro, timerColisao;
+
+    int tempoAmbiente = 100, tempoMeteoro = 100, tempoColisao = 50; // tempo padrão em ms
 
     public PainelNavinha() {
         setBackground(Color.BLACK);
         setForeground(Color.WHITE);
         setFocusable(true);
         addKeyListener(this);
-
-        timerAmbiente = new Timer(100, e -> {moverNave(); repaint();});
+        
+        preencherPlanoMeteoro(); // Isso deve acontecer apenas uma vez
+        
+        timerAmbiente = new Timer(tempoAmbiente, e -> {desenharMeteoros(); moverNave(); repaint();});
         timerAmbiente.start();
 
-        preencherPlanoMeteoro(); // Isso deve acontecer apenas uma vez
+        // timerMeteoro = new Timer(tempoMeteoro, e -> {desenharMeteoros(); repaint();});
+        // timerMeteoro.start();
 
-        timerMeteoro = new Timer(500, e -> {desenharMeteoros(); repaint();}); // 100ms é um bom tempo, mas seria bom deixar um segundo Timer caso tenha opção de dificuldade
-        timerMeteoro.start();
+        timerColisao = new Timer(tempoColisao, e -> {verificarColisao();});
+        timerColisao.start();
     }
 
     @Override
@@ -62,10 +68,11 @@ public class PainelNavinha extends JPanel implements KeyListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        preencher();
-
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, TAMANHO_FONTE));
         g.drawString("== Jogo Navinha ==", 375, 20);
+        g.drawString("Pontuação: " + ++pontuacao, 10, 540);
+
+        preencher();
 
         desenharNave();
 
@@ -85,20 +92,28 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
         desenharEstrelas();
 
-        g.setColor(Color.YELLOW);
         for (int i = 0; i < plano_estrelas.length; i++) {
             String linha = new String(plano_estrelas[i]);
 
             g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE);
         }
+    }
 
-        g.setColor(Color.WHITE);
-        g.drawString("Pontuação: " + pontuacao++, 10, 540);
+    /**
+     * Verifica se houve colisão entre os meteoros e a nave;
+     */
+    private void verificarColisao() {
+        for (int i = plano_meteoros.length - 1; i >= 0; i--) 
+            for (int j = plano_meteoros[0].length - 1; j >= 0; j--) 
+                if(plano_meteoros[i][j] == 'O' && plano_nave[i][j] != ' '){
+                    finalizar();
+                    return;
+                }
     }
 
     /**
      * Insere os elementos que representam estrelas na matriz que representa o plano das estrelas,
-     * verificando também se não existe elementos presentes na matriz que representa o plano da nave 
+     * verificando também se não existe elementos presentes na matriz que representa o plano da nave.
      */
     private void desenharEstrelas(){
         int quantidadeEstrelas = 0;
@@ -147,7 +162,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
     }
 
     /**
-     * Realiza a movimentação da nave
+     * Realiza a movimentação da nave.
      */
     private void moverNave(){
         if (esquerda && naveX >= 3) naveX -= 2;
@@ -186,7 +201,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
     }
 
     /**
-     * Preenche as matrizes que representam os planos dos elementos
+     * Preenche as matrizes que representam os planos dos elementos.
      */
     private void preencher() {
         for (int i = 0; i < ALTURA; i++) 
@@ -197,11 +212,23 @@ public class PainelNavinha extends JPanel implements KeyListener {
     }
 
     /**
-     * Preenche especificamente a matriz que representa o plano dos meteoros
+     * Preenche especificamente a matriz que representa o plano dos meteoros.
+     * {@code plano_meteoros} é imutável entre os repaints.
      */
     private void preencherPlanoMeteoro(){
         for (int i = 0; i < ALTURA; i++) 
             for (int j = 0; j < LARGURA; j++)
                 plano_meteoros[i][j] = ' '; // plano_meteoros é imutável entre os repaints
+    }
+
+    /**
+     * Encerra a execução do jogo. Essa função será chamada
+     * quando o jogador "perder", por ter encostado em um meteoro.
+     */
+    private void finalizar(){
+        timerAmbiente.stop();
+        // timerMeteoro.stop();
+        timerColisao.stop();
+        JOptionPane.showMessageDialog(this, "Fim de jogo. Pontuação: " + pontuacao, "Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
     }
 }
