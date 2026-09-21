@@ -1,76 +1,60 @@
 package model;
 
-public class Nave {
+public class Nave extends Desenho{
     
-    private int coordenadaX, coordenadaY;
-    private char[][] plano;
+    private int coordenadaNaveX, coordenadaNaveY;
 
-    public Nave(int coordenadaX, int coordenadaY, int altura, int largura) {
-        this.coordenadaX = coordenadaX;
-        this.coordenadaY = coordenadaY;
-        this.plano = new char[altura][largura];
-        desenharNave();
-    }
+    public Nave(int altura, int largura, int coordenadaNaveX, int coordenadaNaveY) {
+        super(altura, largura);
+        
+        this.coordenadaNaveX = coordenadaNaveX;
+        this.coordenadaNaveY = coordenadaNaveY;
 
-    public int getCoordenadaX() {
-        return coordenadaX;
-    }
-
-    public void setCoordenadaX(int coordenadaX) {
-        this.coordenadaX = coordenadaX;
-    }
-
-    public int getCoordenadaY() {
-        return coordenadaY;
-    }
-
-    public void setCoordenadaY(int coordenadaY) {
-        this.coordenadaY = coordenadaY;
-    }
-
-    public char[][] getPlano(){
-        return plano;
-    }
-
-    /**
-     * Desenha a nave na interface.
-     * Crédito da arte: <a href='https://www.asciiart.eu/art/9b7a16c065fdb471'>Christian Jensen (também como C.J. ou CJ)</a>
-     */
-    private void desenharNave(){
         preencher();
-
-        plano[coordenadaY][coordenadaX] = '.';
-
-        plano[coordenadaY + 1][coordenadaX - 1] = '.';
-        plano[coordenadaY + 1][coordenadaX] = '\'';
-        plano[coordenadaY + 1][coordenadaX + 1] = '.';
-
-        plano[coordenadaY + 2][coordenadaX - 1] = '|';
-        plano[coordenadaY + 2][coordenadaX] = 'o';
-        plano[coordenadaY + 2][coordenadaX + 1] = '|';
-
-        plano[coordenadaY + 3][coordenadaX - 2] = '.';
-        plano[coordenadaY + 3][coordenadaX - 1] = '\'';
-        plano[coordenadaY + 3][coordenadaX] = 'o';
-        plano[coordenadaY + 3][coordenadaX + 1] = '\'';
-        plano[coordenadaY + 3][coordenadaX + 2] = '.';
-
-        plano[coordenadaY + 4][coordenadaX - 2] = '|';
-        plano[coordenadaY + 4][coordenadaX - 1] = '.';
-        plano[coordenadaY + 4][coordenadaX] = '-';
-        plano[coordenadaY + 4][coordenadaX + 1] = '.';
-        plano[coordenadaY + 4][coordenadaX + 2] = '|';
-
-        plano[coordenadaY + 5][coordenadaX - 2] = '\'';
-        plano[coordenadaY + 5][coordenadaX + 2] = '\'';
+        desenhar();
     }
 
-    /**
-     * Preenche as matriz que representa o plano dos elementos com ' ' ({@code \U+0020}).
-     */
-    private void preencher(){
-        for (int i = 0; i < plano.length; i++)
-            for (int j = 0; j < plano[0].length; j++)
-                plano[i][j] = ' ';
+    public int getCoordenadaNaveX() {
+        return coordenadaNaveX;
+    }
+
+    public void setCoordenadaNaveX(int coordenadaNaveX) {
+        this.coordenadaNaveX = coordenadaNaveX;
+    }
+
+    public int getCoordenadaNaveY() {
+        return coordenadaNaveY;
+    }
+
+    public void setCoordenadaNaveY(int coordenadaNaveY) {
+        this.coordenadaNaveY = coordenadaNaveY;
+    }
+
+    @Override 
+    protected void desenhar(){
+        plano[coordenadaNaveY][coordenadaNaveX] = '.';
+
+        plano[coordenadaNaveY + 1][coordenadaNaveX - 1] = '.';
+        plano[coordenadaNaveY + 1][coordenadaNaveX] = '\'';
+        plano[coordenadaNaveY + 1][coordenadaNaveX + 1] = '.';
+
+        plano[coordenadaNaveY + 2][coordenadaNaveX - 1] = '|';
+        plano[coordenadaNaveY + 2][coordenadaNaveX] = 'o';
+        plano[coordenadaNaveY + 2][coordenadaNaveX + 1] = '|';
+
+        plano[coordenadaNaveY + 3][coordenadaNaveX - 2] = '.';
+        plano[coordenadaNaveY + 3][coordenadaNaveX - 1] = '\'';
+        plano[coordenadaNaveY + 3][coordenadaNaveX] = 'o';
+        plano[coordenadaNaveY + 3][coordenadaNaveX + 1] = '\'';
+        plano[coordenadaNaveY + 3][coordenadaNaveX + 2] = '.';
+
+        plano[coordenadaNaveY + 4][coordenadaNaveX - 2] = '|';
+        plano[coordenadaNaveY + 4][coordenadaNaveX - 1] = '.';
+        plano[coordenadaNaveY + 4][coordenadaNaveX] = '-';
+        plano[coordenadaNaveY + 4][coordenadaNaveX + 1] = '.';
+        plano[coordenadaNaveY + 4][coordenadaNaveX + 2] = '|';
+
+        plano[coordenadaNaveY + 5][coordenadaNaveX - 2] = '\'';
+        plano[coordenadaNaveY + 5][coordenadaNaveX + 2] = '\'';
     }
 }
