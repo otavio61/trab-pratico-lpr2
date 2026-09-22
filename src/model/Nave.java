@@ -3,15 +3,31 @@ package model;
 public class Nave extends Desenho{
     
     private int coordenadaNaveX, coordenadaNaveY;
+    private boolean esquerda, direita;
 
     public Nave(int altura, int largura, int coordenadaNaveX, int coordenadaNaveY) {
         super(altura, largura);
         
         this.coordenadaNaveX = coordenadaNaveX;
         this.coordenadaNaveY = coordenadaNaveY;
+        this.esquerda = false;
+        this.direita = false;
+    }
 
-        preencher();
-        desenhar();
+    public boolean isEsquerda() {
+        return esquerda;
+    }
+
+    public void setEsquerda(boolean esquerda) {
+        this.esquerda = esquerda;
+    }
+
+    public boolean isDireita() {
+        return direita;
+    }
+
+    public void setDireita(boolean direita) {
+        this.direita = direita;
     }
 
     public int getCoordenadaNaveX() {
@@ -31,7 +47,9 @@ public class Nave extends Desenho{
     }
 
     @Override 
-    protected void desenhar(){
+    public char[][] desenhar(){
+        preencher();
+
         plano[coordenadaNaveY][coordenadaNaveX] = '.';
 
         plano[coordenadaNaveY + 1][coordenadaNaveX - 1] = '.';
@@ -56,5 +74,7 @@ public class Nave extends Desenho{
 
         plano[coordenadaNaveY + 5][coordenadaNaveX - 2] = '\'';
         plano[coordenadaNaveY + 5][coordenadaNaveX + 2] = '\'';
+
+        return plano;
     }
 }

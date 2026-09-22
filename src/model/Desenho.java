@@ -6,15 +6,10 @@ package model;
  */
 public abstract class Desenho{
 
-    // private int coordenadaX, coordenadaY;
     protected char[][] plano;
 
     public Desenho(int altura, int largura){
         plano = new char[altura][largura];
-    }
-
-    public char[][] getPlano(){
-        return plano;
     }
 
     /**
@@ -24,7 +19,7 @@ public abstract class Desenho{
      * 
      * @see Desenho#preencher()
      */
-    protected abstract void desenhar();
+    public abstract char[][] desenhar();
 
     /**
      * Preenche as matriz que representa o plano dos elementos com ' ' ({@code '\U+0020}'').

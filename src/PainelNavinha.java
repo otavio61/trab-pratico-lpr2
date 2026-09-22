@@ -9,27 +9,27 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import model.Meteoro;
+import model.Nave;
+
 public class PainelNavinha extends JPanel implements KeyListener {
     // ALTURA -> y LARGURA -> x
     private final int ALTURA = 25;
     private final int LARGURA = 80;
     private final int TAMANHO_FONTE = 20;
 
-    private char[][] plano_nave = new char[ALTURA][LARGURA];
+    private char[][] plano_nave;
+    private char[][] plano_meteoros;
     private char[][] plano_estrelas = new char[ALTURA][LARGURA];
-    private char[][] plano_meteoros = new char[ALTURA][LARGURA];
 
-    private int naveY = 18;
-    private int naveX = 40;
-
-    private boolean esquerda = false;
-    private boolean direita = false;
+    private Nave nave = new Nave(ALTURA, LARGURA, 40, 18);
+    private Meteoro meteoro = new Meteoro(ALTURA, LARGURA);
 
     private int pontuacao = 0;
     
-    Timer timerAmbiente, timerMeteoro, timerColisao;
+    Timer timerAmbiente, timerColisao;
 
-    int tempoAmbiente = 100, tempoMeteoro = 100, tempoColisao = 50; // tempo padrão em ms
+    int tempoAmbiente = 100, tempoColisao = 50; // tempo padrão em ms
 
     public PainelNavinha() {
         setBackground(Color.BLACK);
@@ -37,13 +37,8 @@ public class PainelNavinha extends JPanel implements KeyListener {
         setFocusable(true);
         addKeyListener(this);
         
-        preencherPlanoMeteoro(); // Isso deve acontecer apenas uma vez
-        
-        timerAmbiente = new Timer(tempoAmbiente, e -> {desenharMeteoros(); moverNave(); repaint();});
+        timerAmbiente = new Timer(tempoAmbiente, e -> {verificarColisao(); moverNave(); repaint();});
         timerAmbiente.start();
-
-        // timerMeteoro = new Timer(tempoMeteoro, e -> {desenharMeteoros(); repaint();});
-        // timerMeteoro.start();
 
         timerColisao = new Timer(tempoColisao, e -> {verificarColisao();});
         timerColisao.start();
@@ -51,14 +46,14 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = true;
-        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) direita = true;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) nave.setEsquerda(true);
+        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) nave.setDireita(true);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) esquerda = false;
-        else if (e.getKeyCode() == KeyEvent.VK_RIGHT)  direita = false;
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) nave.setEsquerda(false);
+        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) nave.setDireita(false);
     }
 
     @Override
@@ -74,7 +69,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
         preencher();
 
-        desenharNave();
+        plano_nave = nave.desenhar();
 
         g.setColor(Color.CYAN);
         for (int i = 0; i < plano_nave.length; i++) {
@@ -82,6 +77,8 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
             g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
         }
+
+        plano_meteoros = meteoro.desenhar();
 
         g.setColor(Color.WHITE);
         for (int i = 0; i < plano_meteoros.length; i++) {
@@ -103,6 +100,8 @@ public class PainelNavinha extends JPanel implements KeyListener {
      * Verifica se houve colisão entre os meteoros e a nave;
      */
     private void verificarColisao() {
+        if(plano_meteoros == null) return;
+
         for (int i = plano_meteoros.length - 1; i >= 0; i--) 
             for (int j = plano_meteoros[0].length - 1; j >= 0; j--) 
                 if(plano_meteoros[i][j] == 'O' && plano_nave[i][j] != ' '){
@@ -131,73 +130,14 @@ public class PainelNavinha extends JPanel implements KeyListener {
         }
     }
 
-    private void desenharMeteoros(){
-        int quantidadeMeteoros = 0;
-        int coordX, coordY;
-        Random r = new Random();
-
-        for (int i = plano_meteoros.length - 1; i >= 0; i--) {
-            for (int j = plano_meteoros[0].length - 1; j >= 0; j--) {
-                if(plano_meteoros[i][j] == 'O'){
-                    if (i + 1 > 24) 
-                        plano_meteoros[i][j] = ' ';
-                    else {
-                        plano_meteoros[i + 1][j] = 'O';
-                        plano_meteoros[i][j] = ' ';
-                        quantidadeMeteoros++;
-                    } 
-                }
-            }   
-        }
-
-        while (quantidadeMeteoros < 5) {
-            coordX = r.nextInt(2, LARGURA);
-            coordY = r.nextInt(1, 5);
-            
-            if(plano_meteoros[coordY][coordX] == ' '){
-                plano_meteoros[coordY][coordX] = 'O';
-                quantidadeMeteoros++;
-            }
-        }
-    }
-
     /**
      * Realiza a movimentação da nave.
      */
     private void moverNave(){
-        if (esquerda && naveX >= 3) naveX -= 2;
-        else if (direita && naveX <= 74) naveX += 2;
-    }
+        int coordenadaX = nave.getCoordenadaNaveX();
 
-    /**
-     * Desenha a nave na interface.
-     * Crédito da arte: <a href='https://www.asciiart.eu/art/9b7a16c065fdb471'>Christian Jensen (também como C.J. ou CJ)</a>
-     */
-    private void desenharNave() {
-        plano_nave[naveY][naveX] = '.';
-
-        plano_nave[naveY + 1][naveX - 1] = '.';
-        plano_nave[naveY + 1][naveX] = '\'';
-        plano_nave[naveY + 1][naveX + 1] = '.';
-
-        plano_nave[naveY + 2][naveX - 1] = '|';
-        plano_nave[naveY + 2][naveX] = 'o';
-        plano_nave[naveY + 2][naveX + 1] = '|';
-
-        plano_nave[naveY + 3][naveX - 2] = '.';
-        plano_nave[naveY + 3][naveX - 1] = '\'';
-        plano_nave[naveY + 3][naveX] = 'o';
-        plano_nave[naveY + 3][naveX + 1] = '\'';
-        plano_nave[naveY + 3][naveX + 2] = '.';
-
-        plano_nave[naveY + 4][naveX - 2] = '|';
-        plano_nave[naveY + 4][naveX - 1] = '.';
-        plano_nave[naveY + 4][naveX] = '-';
-        plano_nave[naveY + 4][naveX + 1] = '.';
-        plano_nave[naveY + 4][naveX + 2] = '|';
-
-        plano_nave[naveY + 5][naveX - 2] = '\'';
-        plano_nave[naveY + 5][naveX + 2] = '\'';
+        if (nave.isEsquerda() && coordenadaX >= 3) nave.setCoordenadaNaveX(coordenadaX - 2);
+        else if (nave.isDireita() && coordenadaX <= 74) nave.setCoordenadaNaveX(coordenadaX + 2);
     }
 
     /**
@@ -206,19 +146,8 @@ public class PainelNavinha extends JPanel implements KeyListener {
     private void preencher() {
         for (int i = 0; i < ALTURA; i++) 
             for (int j = 0; j < LARGURA; j++){
-                plano_nave[i][j] = ' ';
                 plano_estrelas[i][j] = ' ';
             }
-    }
-
-    /**
-     * Preenche especificamente a matriz que representa o plano dos meteoros.
-     * {@code plano_meteoros} é imutável entre os repaints.
-     */
-    private void preencherPlanoMeteoro(){
-        for (int i = 0; i < ALTURA; i++) 
-            for (int j = 0; j < LARGURA; j++)
-                plano_meteoros[i][j] = ' '; // plano_meteoros é imutável entre os repaints
     }
 
     /**
@@ -227,7 +156,6 @@ public class PainelNavinha extends JPanel implements KeyListener {
      */
     private void finalizar(){
         timerAmbiente.stop();
-        // timerMeteoro.stop();
         timerColisao.stop();
         JOptionPane.showMessageDialog(this, "Fim de jogo. Pontuação: " + pontuacao, "Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
     }
