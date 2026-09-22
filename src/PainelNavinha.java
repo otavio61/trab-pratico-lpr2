@@ -67,8 +67,6 @@ public class PainelNavinha extends JPanel implements KeyListener {
         g.drawString("== Jogo Navinha ==", 375, 20);
         g.drawString("Pontuação: " + ++pontuacao, 10, 540);
 
-        preencher();
-
         plano_nave = nave.desenhar();
 
         g.setColor(Color.CYAN);
@@ -119,6 +117,11 @@ public class PainelNavinha extends JPanel implements KeyListener {
         int coordX, coordY;
         Random r = new Random();
 
+        for (int i = 0; i < ALTURA; i++) 
+            for (int j = 0; j < LARGURA; j++){
+                plano_estrelas[i][j] = ' ';
+        }
+
         while (quantidadeEstrelas < 20) {
             coordX = r.nextInt(2, LARGURA);
             coordY = r.nextInt(1, ALTURA);
@@ -138,16 +141,6 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
         if (nave.isEsquerda() && coordenadaX >= 3) nave.setCoordenadaNaveX(coordenadaX - 2);
         else if (nave.isDireita() && coordenadaX <= 74) nave.setCoordenadaNaveX(coordenadaX + 2);
-    }
-
-    /**
-     * Preenche as matrizes que representam os planos dos elementos.
-     */
-    private void preencher() {
-        for (int i = 0; i < ALTURA; i++) 
-            for (int j = 0; j < LARGURA; j++){
-                plano_estrelas[i][j] = ' ';
-            }
     }
 
     /**
