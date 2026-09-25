@@ -37,7 +37,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
         setFocusable(true);
         addKeyListener(this);
         
-        timerAmbiente = new Timer(tempoAmbiente, e -> {verificarColisao(); moverNave(); repaint();});
+        timerAmbiente = new Timer(tempoAmbiente, e -> {moverNave(); repaint();});
         timerAmbiente.start();
 
         timerColisao = new Timer(tempoColisao, e -> {verificarColisao();});
@@ -70,28 +70,15 @@ public class PainelNavinha extends JPanel implements KeyListener {
         plano_nave = nave.desenhar();
 
         g.setColor(Color.CYAN);
-        for (int i = 0; i < plano_nave.length; i++) {
-            String linha = new String(plano_nave[i]);
-
-            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
-        }
+        inserir(plano_nave, g);
 
         plano_meteoros = meteoro.desenhar();
 
         g.setColor(Color.WHITE);
-        for (int i = 0; i < plano_meteoros.length; i++) {
-            String linha = new String(plano_meteoros[i]);
-
-            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE);
-        }
+        inserir(plano_meteoros, g);
 
         desenharEstrelas();
-
-        for (int i = 0; i < plano_estrelas.length; i++) {
-            String linha = new String(plano_estrelas[i]);
-
-            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE);
-        }
+        inserir(plano_estrelas, g);
     }
 
     /**
@@ -151,5 +138,19 @@ public class PainelNavinha extends JPanel implements KeyListener {
         timerAmbiente.stop();
         timerColisao.stop();
         JOptionPane.showMessageDialog(this, "Fim de jogo. Pontuação: " + pontuacao, "Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Insere as informações do plano no {@code JPanel}.
+     * 
+     * @param plano O plano contendo informações para inserir
+     * @param g Objeto {@code Graphics} responsável por inserir as informações no {@code JPanel}
+     */
+    private void inserir(char[][] plano, Graphics g){
+        for (int i = 0; i < plano.length; i++) {
+            String linha = new String(plano[i]);
+
+            g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
+        }
     }
 }
