@@ -3,11 +3,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowListener;
 import java.util.Random;
 
+import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.event.MenuListener;
 
 import model.Meteoro;
 import model.Nave;
@@ -27,9 +30,13 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
     private int pontuacao = 0;
     
-    Timer timerAmbiente, timerColisao;
+    private Timer timerAmbiente, timerColisao;
 
-    int tempoAmbiente = 100, tempoColisao = 50; // tempo padrão em ms
+    private int tempoAmbiente = 100, tempoColisao = 50; // tempo padrão em ms
+
+    private Color corNave = Color.CYAN;
+
+    private boolean encerrado = false;
 
     public PainelNavinha() {
         setBackground(Color.BLACK);
@@ -69,7 +76,7 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
         plano_nave = nave.desenhar();
 
-        g.setColor(Color.CYAN);
+        g.setColor(corNave);
         inserir(plano_nave, g);
 
         plano_meteoros = meteoro.desenhar();
@@ -79,6 +86,20 @@ public class PainelNavinha extends JPanel implements KeyListener {
 
         desenharEstrelas();
         inserir(plano_estrelas, g);
+    }
+
+    /**
+     * Altera a cor padrão da instância de {@code Nave}
+     * @param corNave Nova cor
+     */
+    public void alterarCorNave(){
+        pausar();
+
+        Color novaCor = JColorChooser.showDialog(this, "Teste cor", Color.CYAN);
+
+        if(novaCor != null) corNave = novaCor; 
+
+        retornar();
     }
 
     /**
@@ -135,8 +156,8 @@ public class PainelNavinha extends JPanel implements KeyListener {
      * quando o jogador "perder", por ter encostado em um meteoro.
      */
     private void finalizar(){
-        timerAmbiente.stop();
-        timerColisao.stop();
+        pausar();
+        encerrado = true;
         JOptionPane.showMessageDialog(this, "Fim de jogo. Pontuação: " + pontuacao, "Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -151,6 +172,24 @@ public class PainelNavinha extends JPanel implements KeyListener {
             String linha = new String(plano[i]);
 
             g.drawString(linha, 0, (i + 1) * TAMANHO_FONTE); // o uso de (i + 1) * TAMANHO_FONTE é para simular a divisão de caracteres por linha
+        }
+    }
+
+    /**
+     * Pausa a execução dos timers
+     */
+    public void pausar(){
+        timerAmbiente.stop();
+        timerColisao.stop();
+    }
+
+    /**
+     * Retoma a execução dos timers
+     */
+    public void retornar(){
+        if(!encerrado){
+            timerAmbiente.start();
+            timerColisao.start();
         }
     }
 }
